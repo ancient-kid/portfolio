@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+:root {
+  --background: #000000;
+  --foreground: #ffffff;
+  --secondary: #a0a0a0;
+  --subtle-border: rgba(255, 255, 255, 0.08);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-space-grotesk);
+  --font-mono: var(--font-geist-mono);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-space-grotesk), Arial, Helvetica, sans-serif;
+}
+
+* {
+  border-color: var(--subtle-border);
+}
+
+::selection {
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+}
+
+.custom-cursor-enabled,
+.custom-cursor-enabled * {
+  cursor: none !important;
+}
+
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: 34px;
+  height: 34px;
+  pointer-events: none;
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.28));
+  will-change: transform, opacity;
+}
+
+.custom-cursor-icon {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-image: url('/cursor.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  filter: invert(1) brightness(1.2) contrast(1.05);
+  user-select: none;
+  -webkit-user-drag: none;
+}
