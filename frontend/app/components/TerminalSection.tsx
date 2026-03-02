@@ -67,7 +67,7 @@ export function TerminalSection() {
   }, [renderedLines]);
 
   return (
-    <section id="terminal" className="px-6 pb-24 pt-8 sm:px-10 lg:px-20 lg:pb-32">
+    <section id="terminal" className="border-t border-white/[0.06] px-6 pb-24 pt-8 sm:px-10 lg:px-20 lg:pb-32">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}

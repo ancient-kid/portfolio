@@ -27,10 +27,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${spaceGrotesk.variable} ${geistMono.variable} antialiased`}
+        className={`${spaceGrotesk.variable} ${geistMono.variable} relative antialiased`}
       >
+        <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.025] [background-image:radial-gradient(rgba(255,255,255,0.75)_0.5px,transparent_0.5px)] [background-size:2px_2px]" />
         <CustomCursor />
-        {children}
+        <div className="relative z-10">{children}</div>
       </body>
     </html>
   );

@@ -6,7 +6,7 @@ import { engineeringLogs } from "../logs/data";
 
 export function EngineeringLogsSection() {
   return (
-    <section id="logs" className="px-6 py-24 sm:px-10 lg:px-20 lg:py-28">
+    <section id="logs" className="border-t border-white/[0.06] px-6 py-24 sm:px-10 lg:px-20 lg:py-28">
       <div className="mx-auto max-w-7xl">
         <h2 className="text-[11px] uppercase tracking-[0.3em] text-white/55">Engineering Logs</h2>
 

@@ -23,7 +23,7 @@ const labItems = [
 
 export function SystemLabSection() {
   return (
-    <section id="lab" className="px-6 pb-12 pt-2 sm:px-10 lg:px-20 lg:pb-16">
+    <section id="lab" className="border-t border-white/[0.06] px-6 pb-12 pt-2 sm:px-10 lg:px-20 lg:pb-16">
       <div className="mx-auto max-w-7xl">
         <h2 className="text-[11px] uppercase tracking-[0.3em] text-white/55">System Lab</h2>
 

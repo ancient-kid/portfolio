@@ -11,7 +11,7 @@ const focusAreas = [
 
 export function CurrentFocusSection() {
   return (
-    <section id="focus" className="px-6 py-14 sm:px-10 lg:px-20 lg:py-18">
+    <section id="focus" className="border-t border-white/[0.06] px-6 py-14 sm:px-10 lg:px-20 lg:py-18">
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         whileInView={{ opacity: 1, y: 0 }}

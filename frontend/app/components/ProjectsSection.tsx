@@ -29,7 +29,7 @@ const projects = [
 
 export function ProjectsSection() {
   return (
-    <section id="systems" className="px-6 py-24 sm:px-10 lg:px-20 lg:py-32">
+    <section id="systems" className="border-t border-white/[0.06] px-6 py-24 sm:px-10 lg:px-20 lg:py-32">
       <div className="mx-auto max-w-7xl">
         <div className="mb-10 flex items-end justify-between gap-4">
           <p className="text-[10px] uppercase tracking-[0.24em] text-white/50">Selected Systems</p>
