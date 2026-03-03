@@ -18,7 +18,7 @@ export function EngineeringLogsSection() {
               whileInView={{ opacity: 1, y: 0 }}
               whileHover={{ opacity: 0.92, y: -2 }}
               viewport={{ once: true, amount: 0.35 }}
-              transition={{ duration: 0.45, delay: index * 0.04, ease: "easeOut" }}
+              transition={{ duration: 0.3, delay: index * 0.02, ease: "easeOut" }}
               className="py-1"
             >
               <h3 className="text-xl font-semibold tracking-[-0.01em] text-white">{log.title}</h3>

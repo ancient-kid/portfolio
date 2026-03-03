@@ -1,13 +1,16 @@
-"use client";
+                                                                                                                                                                                                                                                                                                                                                                                  "use client";
 
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import { useEffect, useState } from "react";
 
 export function CustomCursor() {
+  const springConfig = { stiffness: 900, damping: 34, mass: 0.10 };
+  const pressTransition = { duration: 0.2, ease: "easeOut" as const };
+
   const x = useMotionValue(-100);
   const y = useMotionValue(-100);
-  const smoothX = useSpring(x, { stiffness: 420, damping: 36, mass: 0.2 });
-  const smoothY = useSpring(y, { stiffness: 420, damping: 36, mass: 0.2 });
+  const smoothX = useSpring(x, springConfig);
+  const smoothY = useSpring(y, springConfig);
 
   const [enabled, setEnabled] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -73,7 +76,7 @@ export function CustomCursor() {
       className="custom-cursor"
       style={{ x: smoothX, y: smoothY }}
       animate={{ opacity: visible ? 1 : 0, scale: pressed ? 0.92 : 1 }}
-      transition={{ duration: 0.16, ease: "easeOut" }}
+      transition={pressTransition}
     >
       <span aria-hidden className="custom-cursor-icon" />
     </motion.div>
