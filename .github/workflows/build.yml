@@ -8,6 +8,10 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    # This is the "Senior" way to handle subfolders
+    defaults:
+      run:
+        working-directory: ./frontend
 
     steps:
       - name: Checkout Source Code
@@ -17,10 +21,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm' # Speeds up future builds
+          # We tell the cache specifically where the lockfile is
+          cache: 'npm'
+          cache-dependency-path: './frontend/package-lock.json'
 
       - name: Install Dependencies
-        run: npm ci # 'npm ci' is cleaner for automated environments
+        run: npm install
 
       - name: Build Next.js Static Site
         run: npm run build
@@ -29,6 +35,7 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./out  # Next.js static output folder
+          # We point to the 'out' folder INSIDE the frontend folder
+          publish_dir: ./frontend/out 
           publish_branch: production
           commit_message: "Deploy: ${{ github.event.head_commit.message }}"
