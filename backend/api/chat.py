@@ -54,7 +54,7 @@ async def chat(req: ChatRequest) -> StreamingResponse:
     client = _get_client()
     system_prompt = _get_system_prompt()
 
-    model = os.getenv("GROQ_MODEL", "llama3-70b-8192")
+    model = os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
 
     groq_messages = [{"role": "system", "content": system_prompt}] + [
         {"role": m.role, "content": m.content} for m in req.messages
