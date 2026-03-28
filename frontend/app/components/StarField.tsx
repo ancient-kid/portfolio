@@ -47,7 +47,7 @@ export function StarField() {
     let animFrameId: number;
     let stars: Star[] = [];
 
-    const STAR_COUNT = 3000;
+    const STAR_COUNT = 1000;
 
     function buildStars(w: number, h: number) {
       stars = Array.from({ length: STAR_COUNT }, () => {
