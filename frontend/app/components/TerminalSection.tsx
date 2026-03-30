@@ -34,7 +34,6 @@ export function TerminalSection() {
     const tick = () => {
       if (lineIdx >= BOOT_LINES.length) {
         setBooted(true);
-        setTimeout(() => inputRef.current?.focus(), 100);
         return;
       }
       const line = BOOT_LINES[lineIdx];
@@ -118,7 +117,6 @@ export function TerminalSection() {
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.55, ease: "easeOut" }}
         className="mx-auto max-w-6xl rounded-2xl border border-white/10 bg-[#050505]"
-        onClick={() => booted && inputRef.current?.focus()}
       >
         {/* Title bar */}
         <div className="flex items-center justify-between border-b border-white/10 px-5 py-3 font-mono text-xs text-white/80 sm:px-6">
@@ -173,7 +171,10 @@ export function TerminalSection() {
 
           {/* Input line */}
           {booted && (
-            <div className="mt-3 flex items-center gap-2 text-white">
+            <div 
+              className="mt-3 flex items-center gap-2 text-white cursor-text"
+              onClick={() => inputRef.current?.focus()}
+            >
               <span className="text-white/50 select-none">&gt;</span>
               <input
                 ref={inputRef}
