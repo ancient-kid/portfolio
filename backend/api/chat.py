@@ -1,9 +1,9 @@
 import os
 from typing import Generator
 
+import requests
 from dotenv import load_dotenv
 from flask import Blueprint, request, Response
-from groq import Groq
 
 from api.personality import build_system_prompt, load_chat_samples
 
@@ -11,19 +11,16 @@ load_dotenv()
 
 chat_bp = Blueprint("chat", __name__)
 
-# ── Init Groq client + personality prompt at startup ──────────────────────────
-_client: Groq | None = None
+# ── Groq API config ───────────────────────────────────────────────────────────
+GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 _system_prompt: str = ""
 
 
-def _get_client() -> Groq:
-    global _client
-    if _client is None:
-        api_key = os.getenv("GROQ_API_KEY", "")
-        if not api_key:
-            raise RuntimeError("GROQ_API_KEY is not set in environment / .env")
-        _client = Groq(api_key=api_key)
-    return _client
+def _get_api_key() -> str:
+    api_key = os.getenv("GROQ_API_KEY", "")
+    if not api_key:
+        raise RuntimeError("GROQ_API_KEY is not set in environment / .env")
+    return api_key
 
 
 def _get_system_prompt() -> str:
@@ -68,23 +65,40 @@ def chat():
     if error:
         return {"error": error}, 400
     
-    client = _get_client()
+    api_key = _get_api_key()
     system_prompt = _get_system_prompt()
     model = os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
 
     groq_messages = [{"role": "system", "content": system_prompt}] + messages
 
     def token_stream() -> Generator[str, None, None]:
-        stream = client.chat.completions.create(
-            model=model,
-            messages=groq_messages,
-            stream=True,
-            max_tokens=512,
-            temperature=0.75,
-        )
-        for chunk in stream:
-            delta = chunk.choices[0].delta.content
-            if delta:
-                yield delta
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        }
+        payload = {
+            "model": model,
+            "messages": groq_messages,
+            "stream": True,
+            "max_tokens": 512,
+            "temperature": 0.75,
+        }
+        
+        with requests.post(GROQ_API_URL, json=payload, headers=headers, stream=True) as resp:
+            resp.raise_for_status()
+            for line in resp.iter_lines(decode_unicode=True):
+                if not line or not line.startswith("data: "):
+                    continue
+                data_str = line[6:]  # strip "data: " prefix
+                if data_str == "[DONE]":
+                    break
+                try:
+                    import json
+                    chunk = json.loads(data_str)
+                    delta = chunk.get("choices", [{}])[0].get("delta", {}).get("content")
+                    if delta:
+                        yield delta
+                except (ValueError, KeyError, IndexError):
+                    continue
 
     return Response(token_stream(), mimetype="text/plain")
