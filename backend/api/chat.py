@@ -99,7 +99,8 @@ def chat():
     messages, error = _validate_chat_request(data)
     
     if error:
-        return {"error": error}, 400
+        # Return error as plain text stream so frontend displays it
+        return Response(error, status=400, mimetype="text/plain")
     
     # Check for abuse patterns
     ip = get_client_ip()
@@ -110,7 +111,7 @@ def chat():
         )
         abuse_error = abuse_detector.check_abuse(ip, last_user_msg)
         if abuse_error:
-            return {"error": abuse_error}, 429
+            return Response(abuse_error, status=429, mimetype="text/plain")
     
     # Check cache first (saves Groq API calls)
     use_cache, cached_response = should_use_cache(messages)

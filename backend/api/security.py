@@ -82,9 +82,9 @@ def rate_limit_middleware():
     allowed, retry_after = global_limiter.is_allowed(ip, GLOBAL_RATE_LIMIT)
     if not allowed:
         return Response(
-            '{"error": "Too many requests. Please slow down."}',
+            "arre bhai, itna mat spam kar... thoda ruk ja!",
             status=429,
-            mimetype="application/json",
+            mimetype="text/plain",
             headers={"Retry-After": str(retry_after)}
         )
     
@@ -93,9 +93,9 @@ def rate_limit_middleware():
         allowed, retry_after = chat_limiter.is_allowed(ip, CHAT_RATE_LIMIT)
         if not allowed:
             return Response(
-                '{"error": "Chat rate limit reached. Please wait a moment."}',
+                "don't be so cheeky... spam mat kar!!",
                 status=429,
-                mimetype="application/json",
+                mimetype="text/plain",
                 headers={"Retry-After": str(retry_after)}
             )
     
@@ -123,9 +123,9 @@ def validate_request_size():
     content_length = request.content_length
     if content_length and content_length > MAX_CONTENT_LENGTH:
         return Response(
-            '{"error": "Request too large"}',
+            "itna lamba message mat likh yaar... chhota kar!",
             status=413,
-            mimetype="application/json"
+            mimetype="text/plain"
         )
     return None
 
@@ -144,7 +144,7 @@ def sanitize_message(content: str) -> tuple[str, str | None]:
     Returns (sanitized_content, error_message).
     """
     if not content or not content.strip():
-        return "", "Empty message"
+        return "", "kuch toh likh... empty message mat bhej!"
     
     # Strip excessive whitespace
     content = " ".join(content.split())
@@ -153,7 +153,7 @@ def sanitize_message(content: str) -> tuple[str, str | None]:
     content_lower = content.lower()
     for pattern in SUSPICIOUS_PATTERNS:
         if re.search(pattern, content_lower, re.IGNORECASE):
-            return "", "Invalid content detected"
+            return "", "suspicious script mat likh!! nice try tho 😏"
     
     return content, None
 
@@ -201,7 +201,7 @@ class AbuseDetector:
         # Check for repeated identical messages (bot behavior)
         recent_hashes = [h for t, h in self.message_hashes[ip] if now - t < 60]
         if recent_hashes.count(msg_hash) >= 3:
-            return "Please don't spam the same message"
+            return "don't be so cheeky... spam mat kar!!"
         
         self.message_hashes[ip].append((now, msg_hash))
         return None

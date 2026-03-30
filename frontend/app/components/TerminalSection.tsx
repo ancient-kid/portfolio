@@ -78,7 +78,14 @@ export function TerminalSection() {
         body: JSON.stringify({ messages: history }),
       });
 
-      if (!res.ok || !res.body) throw new Error("Backend error");
+      // Handle error responses - read the error message from backend
+      if (!res.ok) {
+        const errorText = await res.text();
+        setMessages((prev) => [...prev, { role: "assistant", content: errorText || "something went wrong..." }]);
+        return;
+      }
+
+      if (!res.body) throw new Error("No response body");
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
@@ -96,7 +103,7 @@ export function TerminalSection() {
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "— backend offline. start the python server." },
+        { role: "assistant", content: "backend offline hai... server start karo!" },
       ]);
     } finally {
       setIsStreaming(false);
