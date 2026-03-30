@@ -1,20 +1,18 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from api.chat import router as chat_router
+from flask import Flask
+from flask_cors import CORS
+from api.chat import chat_bp
 
-app = FastAPI(title="ANRG Portfolio API")
+app = Flask(__name__)
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+CORS(app, origins=["http://localhost:3000"], supports_credentials=True)
 
-app.include_router(chat_router, prefix="/api")
+app.register_blueprint(chat_bp, url_prefix="/api")
 
 
-@app.get("/health")
+@app.route("/health")
 def health():
     return {"status": "ok"}
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8080, debug=True)

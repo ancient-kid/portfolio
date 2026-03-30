@@ -1,18 +1,15 @@
 import os
-from contextlib import asynccontextmanager
-from typing import AsyncGenerator
+from typing import Generator
 
 from dotenv import load_dotenv
-from fastapi import APIRouter
-from fastapi.responses import StreamingResponse
+from flask import Blueprint, request, Response
 from groq import Groq
-from pydantic import BaseModel
 
 from api.personality import build_system_prompt, load_chat_samples
 
 load_dotenv()
 
-router = APIRouter()
+chat_bp = Blueprint("chat", __name__)
 
 # ── Init Groq client + personality prompt at startup ──────────────────────────
 _client: Groq | None = None
@@ -38,32 +35,49 @@ def _get_system_prompt() -> str:
     return _system_prompt
 
 
-# ── Request / Response schemas ─────────────────────────────────────────────────
-class Message(BaseModel):
-    role: str  # "user" | "assistant"
-    content: str
-
-
-class ChatRequest(BaseModel):
-    messages: list[Message]  # full conversation history from the frontend
+def _validate_chat_request(data: dict) -> tuple[list[dict], str | None]:
+    """Validate chat request and return (messages, error)."""
+    if not data or "messages" not in data:
+        return [], "Missing 'messages' field"
+    
+    messages = data["messages"]
+    if not isinstance(messages, list):
+        return [], "'messages' must be a list"
+    
+    validated = []
+    for i, msg in enumerate(messages):
+        if not isinstance(msg, dict):
+            return [], f"Message {i} must be an object"
+        role = msg.get("role")
+        content = msg.get("content")
+        if role not in ("user", "assistant"):
+            return [], f"Message {i}: role must be 'user' or 'assistant'"
+        if not isinstance(content, str):
+            return [], f"Message {i}: content must be a string"
+        validated.append({"role": role, "content": content})
+    
+    return validated, None
 
 
 # ── Streaming chat endpoint ────────────────────────────────────────────────────
-@router.post("/chat")
-async def chat(req: ChatRequest) -> StreamingResponse:
+@chat_bp.route("/chat", methods=["POST"])
+def chat():
+    data = request.get_json(silent=True) or {}
+    messages, error = _validate_chat_request(data)
+    
+    if error:
+        return {"error": error}, 400
+    
     client = _get_client()
     system_prompt = _get_system_prompt()
-
     model = os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
 
-    groq_messages = [{"role": "system", "content": system_prompt}] + [
-        {"role": m.role, "content": m.content} for m in req.messages
-    ]
+    groq_messages = [{"role": "system", "content": system_prompt}] + messages
 
-    async def token_stream() -> AsyncGenerator[str, None]:
+    def token_stream() -> Generator[str, None, None]:
         stream = client.chat.completions.create(
             model=model,
-            messages=groq_messages,  # type: ignore[arg-type]
+            messages=groq_messages,
             stream=True,
             max_tokens=512,
             temperature=0.75,
@@ -73,4 +87,4 @@ async def chat(req: ChatRequest) -> StreamingResponse:
             if delta:
                 yield delta
 
-    return StreamingResponse(token_stream(), media_type="text/plain")
+    return Response(token_stream(), mimetype="text/plain")
