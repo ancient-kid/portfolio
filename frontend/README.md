@@ -18,6 +18,16 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
+## Local API Configuration
+
+The terminal chat UI reads its backend URL from `NEXT_PUBLIC_API_URL`.
+
+1. Copy `.env.example` to `.env.local`.
+2. Set `NEXT_PUBLIC_API_URL=http://127.0.0.1:5000` (or whichever backend port you use locally).
+3. Run `npm run dev`.
+
+For production behind a reverse proxy (same domain, `/api/*` forwarded to backend), build without setting `NEXT_PUBLIC_API_URL` so frontend requests stay relative (for example `/api/chat`).
+
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
 ## Learn More

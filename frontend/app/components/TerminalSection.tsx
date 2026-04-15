@@ -15,6 +15,11 @@ const BOOT_LINES = [
   "online. ask me anything.",
 ];
 
+const API_BASE = (
+  process.env.NEXT_PUBLIC_API_URL ??
+  (process.env.NODE_ENV === "development" ? "http://127.0.0.1:5000" : "")
+).replace(/\/+$/, "");
+
 export function TerminalSection() {
   const [booted, setBooted] = useState(false);
   const [bootLines, setBootLines] = useState<string[]>([]);
@@ -72,7 +77,7 @@ export function TerminalSection() {
     setStreamBuffer("");
 
     try {
-      const res = await fetch("/api/chat", {
+      const res = await fetch(`${API_BASE}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: history }),
@@ -80,8 +85,14 @@ export function TerminalSection() {
 
       // Handle error responses - read the error message from backend
       if (!res.ok) {
+        const contentType = res.headers.get("content-type") ?? "";
         const errorText = await res.text();
-        setMessages((prev) => [...prev, { role: "assistant", content: errorText || "something went wrong..." }]);
+        const isHtmlError = contentType.includes("text/html") || /<html|<!doctype html/i.test(errorText);
+        const message = isHtmlError
+          ? "couldn't reach backend api. set NEXT_PUBLIC_API_URL in frontend/.env.local and restart npm run dev."
+          : errorText || "something went wrong...";
+
+        setMessages((prev) => [...prev, { role: "assistant", content: message }]);
         return;
       }
 

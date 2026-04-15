@@ -15,10 +15,12 @@ load_dotenv()
 app = Flask(__name__)
 
 # ── Configuration ─────────────────────────────────────────────────────────────
-DEBUG = os.getenv("DEBUG", "false").lower() == "true"
+FLASK_ENV = os.getenv("FLASK_ENV", "").lower()
+DEBUG = os.getenv("DEBUG", "false").lower() == "true" or FLASK_ENV == "development"
+PORT = int(os.getenv("PORT", "8000"))
 ALLOWED_ORIGINS = os.getenv(
     "ALLOWED_ORIGINS", 
-    "https://anrg.dev,https://www.anrg.dev,http://localhost:3000"
+    "https://anrg.dev,https://www.anrg.dev,http://localhost:3000,http://127.0.0.1:3000"
 ).split(",")
 
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024  # 16 KB
@@ -90,4 +92,4 @@ def health():
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000, debug=DEBUG)
+    app.run(host="0.0.0.0", port=PORT, debug=DEBUG)
