@@ -4,7 +4,8 @@ Saves Groq API calls for frequently asked questions.
 """
 
 import re
-from typing import Optional
+import time
+from typing import Any, Optional
 
 # ── Cached Responses ──────────────────────────────────────────────────────────
 # Keywords/patterns mapped to cached responses
@@ -71,6 +72,31 @@ CACHED_RESPONSES: list[tuple[list[str], str]] = [
         "based in Mumbai, India"
     ),
 ]
+
+# ── Generic TTL Cache (In-Memory) ───────────────────────────────────────────
+_TTL_CACHE: dict[str, tuple[float, Any]] = {}
+
+
+def get_ttl_cache(key: str, ttl_seconds: int) -> Any | None:
+    """
+    Get cached value if present and not expired.
+    Returns None if key is missing or stale.
+    """
+    cached = _TTL_CACHE.get(key)
+    if not cached:
+        return None
+
+    created_at, value = cached
+    if time.time() - created_at > ttl_seconds:
+        _TTL_CACHE.pop(key, None)
+        return None
+
+    return value
+
+
+def set_ttl_cache(key: str, value: Any) -> None:
+    """Store value in in-memory TTL cache."""
+    _TTL_CACHE[key] = (time.time(), value)
 
 
 def get_cached_response(message: str) -> Optional[str]:

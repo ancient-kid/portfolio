@@ -1,3 +1,4 @@
+import { ActivityHeatmapsSection } from "./components/ActivityHeatmapsSection";
 import { CurrentFocusSection } from "./components/CurrentFocusSection";
 import { EngineeringLogsSection } from "./components/EngineeringLogsSection";
 import { FooterSection } from "./components/FooterSection";
@@ -11,6 +12,7 @@ export default function Home() {
     <main className="bg-black text-white">
       <HeroSection />
       <CurrentFocusSection />
+      <ActivityHeatmapsSection />
       <ProjectsSection />
       <EngineeringLogsSection />
       <SystemLabSection />

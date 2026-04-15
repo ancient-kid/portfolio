@@ -3,6 +3,7 @@ from flask import Flask, Response
 from flask_cors import CORS
 from dotenv import load_dotenv
 
+from api.activity import activity_bp
 from api.chat import chat_bp
 from api.security import (
     rate_limit_middleware,
@@ -83,6 +84,7 @@ def handle_exception(e):
 
 # ── Routes ────────────────────────────────────────────────────────────────────
 app.register_blueprint(chat_bp, url_prefix="/api")
+app.register_blueprint(activity_bp, url_prefix="/api")
 
 
 @app.route("/health")
